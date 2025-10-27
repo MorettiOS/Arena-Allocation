@@ -9,6 +9,8 @@ struct Arena {
     char *buffer; // Base address of the memory arena
     size_t totalSize; // Total size of the memory (4KB by default)
     size_t offset; // Current allocation position
+    struct Arena *next; // Next arena in the linked list
+    struct Arena *prev; // Previous arena in the linked list
 };
 
     struct Arena global_arena = {0};
@@ -32,7 +34,27 @@ void *alloc(size_t size) {
     return allocated;
 }
 
+// Reset the arena to its initial state
+void reset(struct Arena *arena) {
+    if (!arena) return;
+    arena->offset = 0;
+    arena->next = NULL;
+    arena->prev = NULL;
+}
+
+// Destroy the arena and its memory mapping
+void destroy(struct Arena *arena) {
+    if (arena && arena->buffer) {
+        munmap(arena->buffer, arena->totalSize);
+        arena->buffer = NULL;
+        arena->totalSize = 0;
+        arena->offset = 0;
+    }
+}
+
 int main() {
     int *x = (int*)alloc(sizeof(int) * 10); // Example Allocation
+    reset(&global_arena);
+    destroy(&global_arena);
     return 0;
 }
