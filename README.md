@@ -14,4 +14,5 @@ The allocator maintains a large block of memory called an "arena". When memory i
 
 Building
 ```gcc -o allocator allocator.c```
+
 ```./allocator```
